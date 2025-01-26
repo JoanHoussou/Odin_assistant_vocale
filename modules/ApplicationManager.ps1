@@ -10,7 +10,7 @@ function Start-Application {
         [string]$Arguments
     )
     
-    $script:appPaths = @{
+    $appPaths = @{
         'chrome' = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
         'firefox' = 'C:\Program Files\Mozilla Firefox\firefox.exe'
         'notepad' = "$env:SystemRoot\system32\notepad.exe"
@@ -22,8 +22,8 @@ function Start-Application {
     }
     
     $appName = $AppName.ToLower()
-    if ($script:appPaths.ContainsKey($appName)) {
-        $path = $script:appPaths[$appName]
+    if ($appPaths.ContainsKey($appName)) {
+        $path = $appPaths[$appName]
         if (Test-Path $path) {
             if ($appName -eq 'youtube') {
                 if ($Arguments) {
@@ -46,10 +46,8 @@ function Start-Application {
             return $false
         }
     } else {
-        $apps = $script:appPaths.Keys -join ', '
+        $apps = $appPaths.Keys -join ', '
         Write-Error "Application non reconnue : $AppName. Applications supportées : $apps"
         return $false
     }
 }
-
-Export-ModuleMember -Function Start-Application

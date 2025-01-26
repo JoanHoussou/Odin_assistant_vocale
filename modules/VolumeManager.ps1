@@ -33,5 +33,3 @@ function Set-SystemVolume {
         return $false
     }
 }
-
-Export-ModuleMember -Function Set-SystemVolume

@@ -43,5 +43,3 @@ function New-Screenshot {
         return $false
     }
 }
-
-Export-ModuleMember -Function Show-Notification, New-Screenshot

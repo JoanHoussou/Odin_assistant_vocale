@@ -54,5 +54,3 @@ function Invoke-UIAction {
         return $false
     }
 }
-
-Export-ModuleMember -Function Set-WindowState, Invoke-UIAction

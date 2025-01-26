@@ -1,5 +1,44 @@
 # Assistant Vocal - Guide des Commandes
 
+## Commandes de Souris
+
+### Déplacement Absolu
+```
+"déplace la souris vers 100,200"     -> Déplace le curseur aux coordonnées (100,200)
+"positionner souris à x100 y300"     -> Déplace le curseur aux coordonnées (100,300)
+"bouge aux coordonnées 500,400"      -> Déplace le curseur aux coordonnées (500,400)
+"souris à 250 350"                   -> Déplace le curseur aux coordonnées (250,350)
+```
+
+### Déplacement Relatif
+```
+"déplace la souris de 50 pixels à droite"    -> Déplace le curseur de 50 pixels vers la droite
+"décale de 30 pixels vers le haut"           -> Déplace le curseur de 30 pixels vers le haut
+"bouge horizontalement de 100"               -> Déplace le curseur de 100 pixels horizontalement
+"déplace gauche de 40 pixels"                -> Déplace le curseur de 40 pixels vers la gauche
+```
+
+### Clics
+```
+"clic gauche"                        -> Effectue un clic gauche
+"clic droit"                         -> Effectue un clic droit
+"clic milieu"                        -> Effectue un clic avec la molette
+"double clic gauche"                 -> Effectue un double-clic gauche
+"clic bouton principal"              -> Effectue un clic gauche (bouton principal)
+"clic bouton secondaire"             -> Effectue un clic droit (bouton secondaire)
+```
+
+### Défilement
+```
+"défiler vers le haut"               -> Défile d'un cran vers le haut
+"défiler vers le bas"                -> Défile d'un cran vers le bas
+"défiler de 3 tours"                 -> Défile de 3 unités
+"scroll vers le haut"                -> Défile vers le haut
+"scroll vers le bas"                 -> Défile vers le bas
+"défiler en haut"                    -> Défile vers le haut
+"défiler en bas"                     -> Défile vers le bas
+```
+
 ## Commandes de Volume
 ```
 "volume 50"              -> Règle le volume à 50%
@@ -40,17 +79,6 @@
 "affiche"              -> Restaure toutes les fenêtres (alternative)
 ```
 
-## Commandes de Souris
-```
-"déplace souris vers 100,200"      -> Déplace le curseur aux coordonnées (100,200)
-"souris déplacée vers 500,300"     -> Déplace le curseur aux coordonnées (500,300)
-"clic gauche"                      -> Effectue un clic gauche
-"clic droit"                       -> Effectue un clic droit
-"clic milieu"                      -> Effectue un clic milieu
-"double clic gauche"               -> Effectue un double-clic gauche
-"double clic droit"                -> Effectue un double-clic droit
-```
-
 ## Commandes d'Interface Utilisateur
 ```
 "clique sur Enregistrer dans Document"    -> Clique sur le bouton "Enregistrer" dans la fenêtre "Document"
@@ -61,23 +89,7 @@
 ## Notes Importantes
 1. Les commandes sont insensibles à la casse
 2. Les guillemets sont optionnels pour les noms de boutons, champs et fenêtres
-3. Il existe plusieurs variations pour chaque commande :
-   - "ouvrir/ouvre/lance/démarre" fonctionnent de manière identique
-   - "minimiser/minimise/cache/réduis" sont équivalents
-   - "restaurer/restaure/affiche/montre" sont équivalents
-
-## Exemples de Séquences de Commandes
-```
-# Recherche sur YouTube
-"ouvre youtube"
-"cherche sur youtube tutoriel python"
-
-# Gestion des fenêtres et applications
-"lance chrome"
-"minimise"
-"restaure"
-
-# Navigation et saisie
-"déplace souris vers 100,200"
-"clic gauche"
-"écris bonjour dans recherche de Chrome"
+3. Pour le défilement, vous pouvez spécifier le nombre de tours (ex: "défiler de 3 tours")
+4. Les nombres dans les coordonnées peuvent être séparés par des virgules, points, espaces
+5. Les directions peuvent être spécifiées de différentes manières (haut/vers le haut/en haut)
+6. Pour le déplacement de la souris, les coordonnées sont en pixels par rapport à l'écran

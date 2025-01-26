@@ -34,5 +34,3 @@ function Lock-Session {
         return $false
     }
 }
-
-Export-ModuleMember -Function Restart-Shutdown, Lock-Session

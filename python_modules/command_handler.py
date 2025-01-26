@@ -20,28 +20,69 @@ class CommandHandler:
         return False
 
     def handle_mouse_commands(self, command):
-        # Gestion du déplacement de la souris
-        mouse_move_match = re.search(self.patterns.mouse_patterns()['move'], command)
-        if mouse_move_match:
-            x, y = map(int, mouse_move_match.groups())
+        # Gestion du déplacement absolu
+        mouse_patterns = self.patterns.mouse_patterns()
+        absolute_move_match = re.search(mouse_patterns['absolute_move'], command, re.IGNORECASE)
+        if absolute_move_match:
+            groups = absolute_move_match.groups()
+            x = int(groups[0] or groups[2])
+            y = int(groups[1] or groups[3])
             if self.ps_executor.execute_command(f"Invoke-MouseAction -Action Move -X {x} -Y {y}"):
                 self.speech_engine.say_text(f"Souris déplacée vers {x}, {y}")
             else:
                 self.speech_engine.say_text("Erreur lors du déplacement de la souris")
             return True
 
+        # Gestion du défilement
+        scroll_match = re.search(mouse_patterns['scroll'], command)
+        if scroll_match:
+            direction = None
+            amount = 1  # Par défaut, un tour
+
+            # Vérifier la direction
+            if "haut" in command.lower() or "nord" in command.lower():
+                direction = "Haut"
+            elif "bas" in command.lower() or "sud" in command.lower():
+                direction = "Bas"
+
+            # Chercher le nombre de tours
+            tours_match = re.search(r'(\d+)\s+tours?', command)
+            if tours_match:
+                try:
+                    amount = int(tours_match.group(1))
+                except ValueError:
+                    amount = 1
+
+            if direction:
+                if self.ps_executor.execute_command(
+                    f"Invoke-MouseAction -Action Scroll -Direction {direction} -Scroll {amount}"
+                ):
+                    self.speech_engine.say_text(f"Défilement {direction.lower()} de {amount} tour{'s' if amount > 1 else ''}")
+                else:
+                    self.speech_engine.say_text("Erreur lors du défilement")
+            return True
+
         # Gestion des clics
-        click_match = re.search(self.patterns.mouse_patterns()['click'], command)
+        click_match = re.search(mouse_patterns['click'], command)
         if click_match:
-            button = click_match.group(1).capitalize()
-            if "double" in command:
-                if self.ps_executor.execute_command(f"Invoke-MouseAction -Action DoubleClick -Button {button}"):
-                    self.speech_engine.say_text(f"Double-clic {button.lower()} effectué")
+            groups = click_match.groups()
+            button = next((g for g in groups if g), "gauche")  # Premier groupe non None ou "gauche" par défaut
+            # Mapper les boutons alternatifs
+            button_map = {
+                "principal": "gauche",
+                "secondaire": "droit",
+                "central": "milieu"
+            }
+            button = button_map.get(button.lower(), button.lower())
+            
+            if "double" in command.lower():
+                if self.ps_executor.execute_command(f"Invoke-MouseAction -Action Click -Button {button.capitalize()} -Double"):
+                    self.speech_engine.say_text(f"Double-clic {button} effectué")
                 else:
                     self.speech_engine.say_text("Erreur lors du double-clic")
             else:
-                if self.ps_executor.execute_command(f"Invoke-MouseAction -Action Click -Button {button}"):
-                    self.speech_engine.say_text(f"Clic {button.lower()} effectué")
+                if self.ps_executor.execute_command(f"Invoke-MouseAction -Action Click -Button {button.capitalize()}"):
+                    self.speech_engine.say_text(f"Clic {button} effectué")
                 else:
                     self.speech_engine.say_text("Erreur lors du clic")
             return True

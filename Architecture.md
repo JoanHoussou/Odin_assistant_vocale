@@ -27,7 +27,8 @@ odin_assistant_vocale/
 │
 ├── voice_commands.py                 # Point d'entrée Python
 ├── audio_commands.ps1               # Point d'entrée PowerShell
-└── COMMANDS.md                      # Documentation des commandes
+├── COMMANDS.md                      # Documentation des commandes
+└── PATTERNS.md                      # Guide des patterns de reconnaissance
 ```
 
 ## Architecture Modulaire
@@ -53,6 +54,8 @@ odin_assistant_vocale/
 - Classe `CommandPatterns`
 - Définition des patterns de reconnaissance
 - Organisation par catégories (souris, fenêtres, etc.)
+- Documentation détaillée dans PATTERNS.md
+- Extensible pour de nouveaux types de commandes
 
 #### Command Handler (command_handler.py)
 - Classe `CommandHandler`
@@ -106,6 +109,19 @@ Tous les modules PowerShell utilisent des verbes approuvés :
 - `Invoke-*` : Pour exécuter une action
 - `Lock-*` : Pour verrouiller une ressource
 - `Restart-*` : Pour redémarrer un service ou système
+
+## Documentation
+
+1. **COMMANDS.md**
+   - Liste complète des commandes disponibles
+   - Exemples d'utilisation
+   - Guide de référence rapide
+
+2. **PATTERNS.md**
+   - Guide d'ajout de nouveaux patterns
+   - Organisation des patterns par catégorie
+   - Exemples et bonnes pratiques
+   - Maintenance des expressions régulières
 
 ## Principes de Conception
 
