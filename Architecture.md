@@ -3,189 +3,139 @@
 ## Structure du Projet
 
 ```
-odin_assistant/
+odin_assistant_vocale/
 │
-├── src/
-│   ├── core/
-│   │   ├── __init__.py
-│   │   ├── engine.py           # Gestion du moteur vocal (init, synthesis)
-│   │   ├── recognizer.py       # Reconnaissance vocale et traitement audio
-│   │   └── command_router.py   # Routage des commandes vers les handlers
-│   │
-│   ├── commands/
-│   │   ├── __init__.py
-│   │   ├── base.py            # Classe de base pour les commandes
-│   │   ├── system_commands.py  # Commandes système (volume, shutdown...)
-│   │   ├── window_commands.py  # Gestion des fenêtres
-│   │   ├── mouse_commands.py   # Contrôle de la souris
-│   │   ├── ui_commands.py      # Interaction UI
-│   │   ├── app_commands.py     # Gestion des applications
-│   │   └── media_commands.py   # Commandes multimédia
-│   │
-│   ├── patterns/
-│   │   ├── __init__.py
-│   │   ├── command_patterns.py # Patterns de reconnaissance
-│   │   └── validators.py       # Validation des commandes
-│   │
-│   ├── powershell/
-│   │   ├── __init__.py
-│   │   ├── executor.py        # Exécution des commandes PowerShell
-│   │   └── scripts/           # Scripts PowerShell organisés par fonction
-│   │       ├── system.ps1
-│   │       ├── ui.ps1
-│   │       ├── mouse.ps1
-│   │       └── apps.ps1
-│   │
-│   ├── utils/
-│   │   ├── __init__.py
-│   │   ├── logger.py          # Logging unifié
-│   │   ├── config.py          # Gestion de la configuration
-│   │   └── exceptions.py      # Exceptions personnalisées
-│   │
-│   └── feedback/
-│       ├── __init__.py
-│       ├── voice.py           # Retour vocal
-│       └── visual.py          # Retour visuel (notifications)
+├── python_modules/                    # Modules Python
+│   ├── __init__.py
+│   ├── speech_engine.py              # Gestion de la synthèse vocale
+│   ├── voice_recognizer.py           # Reconnaissance vocale
+│   ├── powershell_executor.py        # Exécution des commandes PowerShell
+│   ├── command_patterns.py           # Patterns de reconnaissance
+│   ├── command_handler.py            # Gestionnaire de commandes
+│   └── console_interface.py          # Interface console
 │
-├── config/
-│   ├── settings.yaml          # Configuration générale
-│   ├── commands.yaml          # Définition des commandes
-│   └── patterns.yaml          # Patterns de reconnaissance
+├── modules/                          # Modules PowerShell
+│   ├── VolumeManager.ps1            # Gestion du volume
+│   ├── ApplicationManager.ps1        # Gestion des applications
+│   ├── SystemManager.ps1            # Gestion système
+│   ├── WindowManager.ps1            # Gestion des fenêtres
+│   ├── UIManager.ps1                # Interface utilisateur
+│   └── MouseManager.ps1             # Contrôle de la souris
 │
-├── tests/                     # Tests unitaires et d'intégration
-│   ├── test_core/
-│   ├── test_commands/
-│   └── test_patterns/
+├── mes_commande_ext/                 # Modules externes
+│   └── mes_actions.ps1              # Actions personnalisées
 │
-├── docs/                      # Documentation
-│   ├── setup.md
-│   ├── commands.md
-│   └── architecture.md
-│
-├── requirements.txt           # Dépendances Python
-├── setup.py                  # Installation du package
-└── main.py                   # Point d'entrée
+├── voice_commands.py                 # Point d'entrée Python
+├── audio_commands.ps1               # Point d'entrée PowerShell
+└── COMMANDS.md                      # Documentation des commandes
 ```
 
-## Principes Architecturaux
+## Architecture Modulaire
 
-### 1. Séparation des Responsabilités
+### 1. Modules Python
 
-#### Core
-- **engine.py** : Gestion du moteur de synthèse vocale
-- **recognizer.py** : Capture et reconnaissance vocale
-- **command_router.py** : Routage intelligent des commandes
+#### Speech Engine (speech_engine.py)
+- Classe `SpeechEngine`
+- Initialisation et gestion du moteur de synthèse vocale
+- Méthodes sécurisées pour la parole
 
-#### Commands
-- Handlers spécialisés par domaine fonctionnel
-- Pattern Command pour l'exécution des actions
-- Interface unifiée via classe de base
+#### Voice Recognizer (voice_recognizer.py)
+- Classe `VoiceRecognizer`
+- Capture et reconnaissance vocale
+- Gestion des erreurs de reconnaissance
 
-#### Patterns
-- Séparation de la logique de reconnaissance
-- Patterns extensibles et maintenables
-- Validation centralisée
+#### PowerShell Executor (powershell_executor.py)
+- Classe `PowerShellExecutor`
+- Interface avec les scripts PowerShell
+- Gestion des erreurs d'exécution
 
-#### PowerShell
-- Isolation de l'interaction système
-- Scripts modulaires et spécialisés
-- Interface unifiée via executor.py
+#### Command Patterns (command_patterns.py)
+- Classe `CommandPatterns`
+- Définition des patterns de reconnaissance
+- Organisation par catégories (souris, fenêtres, etc.)
 
-### 2. Patterns de Conception
+#### Command Handler (command_handler.py)
+- Classe `CommandHandler`
+- Traitement des commandes vocales
+- Routage vers les fonctions PowerShell appropriées
 
-#### Command Pattern
-```python
-# src/commands/base.py
-class CommandHandler:
-    def handle(self, command: str) -> bool:
-        raise NotImplementedError
-```
+#### Console Interface (console_interface.py)
+- Classe `ConsoleInterface`
+- Affichage des commandes et de l'aide
+- Messages de statut
 
-#### Factory Pattern
-```python
-# src/core/command_router.py
-class CommandRouter:
-    def __init__(self):
-        self.handlers = {}
-    
-    def register_handler(self, command_type: str, handler: CommandHandler):
-        self.handlers[command_type] = handler
-```
+### 2. Modules PowerShell
 
-#### Observer Pattern
-```python
-# src/feedback/voice.py
-class VoiceFeedback:
-    def notify(self, message: str):
-        self.synthesize_speech(message)
-```
+#### VolumeManager.ps1
+- `Set-SystemVolume` : Contrôle du volume système
+- Validation des niveaux de volume
+- Gestion des touches multimédia
 
-### 3. Avantages de l'Architecture
+#### ApplicationManager.ps1
+- `Start-Application` : Lancement des applications
+- Gestion des chemins d'applications
+- Support des paramètres de lancement
 
-1. **Maintenance Facilitée**
-   - Modules indépendants et cohésifs
-   - Responsabilités clairement définies
+#### SystemManager.ps1
+- `Restart-Shutdown` : Gestion de l'arrêt/redémarrage
+- `Lock-Session` : Verrouillage de la session
+- Actions système critiques
+
+#### WindowManager.ps1
+- `Set-WindowState` : Gestion de l'état des fenêtres
+- `Invoke-UIAction` : Actions sur l'interface utilisateur
+- Contrôle des fenêtres Windows
+
+#### UIManager.ps1
+- `Show-Notification` : Affichage des notifications
+- `New-Screenshot` : Création de captures d'écran
+- Interactions avec l'interface utilisateur
+
+#### MouseManager.ps1
+- `Invoke-MouseAction` : Actions de la souris
+- Contrôle du curseur
+- Gestion des clics
+
+## Verbes PowerShell Approuvés
+
+Tous les modules PowerShell utilisent des verbes approuvés :
+- `Set-*` : Pour définir un état ou une valeur
+- `Start-*` : Pour démarrer un processus ou une application
+- `New-*` : Pour créer un nouvel objet
+- `Show-*` : Pour afficher une information
+- `Invoke-*` : Pour exécuter une action
+- `Lock-*` : Pour verrouiller une ressource
+- `Restart-*` : Pour redémarrer un service ou système
+
+## Principes de Conception
+
+1. **Modularité**
+   - Modules hautement spécialisés
+   - Responsabilités uniques
+   - Interfaces claires
+
+2. **Maintenabilité**
    - Code organisé et documenté
+   - Standards de nommage respectés
+   - Gestion des erreurs robuste
 
-2. **Extensibilité**
-   - Ajout facile de nouvelles commandes
-   - Patterns extensibles
-   - Configuration externalisée
+3. **Extensibilité**
+   - Architecture modulaire
+   - Patterns réutilisables
+   - Facilité d'ajout de nouvelles commandes
 
-3. **Testabilité**
-   - Tests unitaires par module
-   - Mocking simplifié
-   - Couverture de code optimale
+4. **Performance**
+   - Exécution efficace des commandes
+   - Gestion optimisée des ressources
+   - Réactivité aux commandes vocales
 
-4. **Configuration Flexible**
-   - Configuration YAML pour les paramètres
-   - Patterns de commandes externalisés
-   - Facilité de modification
+## Flux d'Exécution
 
-### 4. Exemple d'Implémentation
+1. Capture de la commande vocale (VoiceRecognizer)
+2. Reconnaissance et traduction en texte
+3. Analyse des patterns de commande (CommandPatterns)
+4. Traitement par le gestionnaire approprié (CommandHandler)
+5. Exécution de la commande PowerShell
+6. Retour vocal à l'utilisateur
 
-```python
-# src/commands/mouse_commands.py
-from .base import CommandHandler
-from ..patterns import command_patterns
-from ..powershell import execute_ps
-
-class MouseCommandHandler(CommandHandler):
-    def handle(self, command: str) -> bool:
-        if match := command_patterns.MOUSE_MOVE.match(command):
-            x, y = match.groups()
-            return execute_ps.control_mouse("Move", x, y)
-        return False
-
-# src/patterns/command_patterns.py
-class CommandPatterns:
-    MOUSE_MOVE = re.compile(
-        r"(?:déplace|bouge|souris\s+déplacée?)(?:r)?\s+"
-        r"(?:la\s+)?(?:souris\s+)?(?:vers|à|en|aux?)?\s+"
-        r"(\d+)\s*[,\s]\s*(\d+)"
-    )
-```
-
-### 5. Gestion de la Configuration
-
-```yaml
-# config/patterns.yaml
-mouse:
-  move:
-    - "déplacer? (la\s+)?souris vers {x},{y}"
-    - "souris déplacée? (vers\s+)?{x},{y}"
-  click:
-    - "cliquer? (avec\s+)?(le\s+)?bouton {button}"
-    - "double[- ]cliquer? {button}"
-```
-
-### 6. Flux de Traitement
-
-1. Capture audio (recognizer.py)
-2. Reconnaissance vocale (recognizer.py)
-3. Routage de la commande (command_router.py)
-4. Validation du pattern (validators.py)
-5. Exécution de la commande (handlers spécifiques)
-6. Retour utilisateur (feedback/voice.py, feedback/visual.py)
-
-Cette architecture modulaire permet une évolution contrôlée du système tout en maintenant une base de code propre et maintenable.
+Cette architecture assure une séparation claire des responsabilités tout en maintenant une cohérence dans l'exécution des commandes vocales.

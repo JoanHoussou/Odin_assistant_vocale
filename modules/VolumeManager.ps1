@@ -8,7 +8,7 @@ function Set-SystemVolume {
     param(
         [Parameter(Mandatory=$true)]
         [ValidateRange(0,100)]
-        [int]$Level = 50
+        [int]$Level
     )
     
     try {

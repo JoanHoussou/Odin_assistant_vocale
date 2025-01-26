@@ -12,7 +12,7 @@ class CommandHandler:
         if re.search(self.patterns.system_patterns()['screenshot'], command):
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filepath = f"capture_{timestamp}.png"
-            if self.ps_executor.execute_command(f"Capture-Screenshot -Path '{filepath}'"):
+            if self.ps_executor.execute_command(f"New-Screenshot -Path '{filepath}'"):
                 self.speech_engine.say_text("Capture d'écran effectuée")
             else:
                 self.speech_engine.say_text("Erreur lors de la capture d'écran")
@@ -24,7 +24,7 @@ class CommandHandler:
         mouse_move_match = re.search(self.patterns.mouse_patterns()['move'], command)
         if mouse_move_match:
             x, y = map(int, mouse_move_match.groups())
-            if self.ps_executor.execute_command(f"Control-Mouse -Action Move -X {x} -Y {y}"):
+            if self.ps_executor.execute_command(f"Invoke-MouseAction -Action Move -X {x} -Y {y}"):
                 self.speech_engine.say_text(f"Souris déplacée vers {x}, {y}")
             else:
                 self.speech_engine.say_text("Erreur lors du déplacement de la souris")
@@ -35,12 +35,12 @@ class CommandHandler:
         if click_match:
             button = click_match.group(1).capitalize()
             if "double" in command:
-                if self.ps_executor.execute_command(f"Control-Mouse -Action DoubleClick -Button {button}"):
+                if self.ps_executor.execute_command(f"Invoke-MouseAction -Action DoubleClick -Button {button}"):
                     self.speech_engine.say_text(f"Double-clic {button.lower()} effectué")
                 else:
                     self.speech_engine.say_text("Erreur lors du double-clic")
             else:
-                if self.ps_executor.execute_command(f"Control-Mouse -Action Click -Button {button}"):
+                if self.ps_executor.execute_command(f"Invoke-MouseAction -Action Click -Button {button}"):
                     self.speech_engine.say_text(f"Clic {button.lower()} effectué")
                 else:
                     self.speech_engine.say_text("Erreur lors du clic")
@@ -54,7 +54,7 @@ class CommandHandler:
         match = re.search(ui_patterns['click'], command)
         if match:
             control, window = match.groups()
-            if self.ps_executor.execute_command(f"Control-UI -Action Click -WindowTitle '{window}' -ControlName '{control}'"):
+            if self.ps_executor.execute_command(f"Invoke-UIAction -Action Click -WindowTitle '{window}' -ControlName '{control}'"):
                 self.speech_engine.say_text(f"Clic effectué sur {control}")
             else:
                 self.speech_engine.say_text("Erreur lors du clic sur l'élément")
@@ -64,7 +64,7 @@ class CommandHandler:
         match = re.search(ui_patterns['focus'], command)
         if match:
             control, window = match.groups()
-            if self.ps_executor.execute_command(f"Control-UI -Action Focus -WindowTitle '{window}' -ControlName '{control}'"):
+            if self.ps_executor.execute_command(f"Invoke-UIAction -Action Focus -WindowTitle '{window}' -ControlName '{control}'"):
                 self.speech_engine.say_text(f"Focus défini sur {control}")
             else:
                 self.speech_engine.say_text("Erreur lors de la définition du focus")
@@ -74,7 +74,7 @@ class CommandHandler:
         match = re.search(ui_patterns['write'], command)
         if match:
             value, control, window = match.groups()
-            if self.ps_executor.execute_command(f"Control-UI -Action SetValue -WindowTitle '{window}' -ControlName '{control}' -Value '{value}'"):
+            if self.ps_executor.execute_command(f"Invoke-UIAction -Action SetValue -WindowTitle '{window}' -ControlName '{control}' -Value '{value}'"):
                 self.speech_engine.say_text(f"Texte saisi dans {control}")
             else:
                 self.speech_engine.say_text("Erreur lors de la saisie du texte")
@@ -85,12 +85,12 @@ class CommandHandler:
         window_patterns = self.patterns.window_patterns()
         
         if re.search(window_patterns['minimize'], command):
-            if self.ps_executor.execute_command("Manage-Windows -Action 'MinimizeAll'"):
+            if self.ps_executor.execute_command("Set-WindowState -Action 'MinimizeAll'"):
                 self.speech_engine.say_text("Fenêtres minimisées")
             return True
         
         if re.search(window_patterns['restore'], command):
-            if self.ps_executor.execute_command("Manage-Windows -Action 'RestoreAll'"):
+            if self.ps_executor.execute_command("Set-WindowState -Action 'RestoreAll'"):
                 self.speech_engine.say_text("Fenêtres restaurées")
             return True
 

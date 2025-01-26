@@ -1,4 +1,4 @@
-function Control-Mouse {
+function Invoke-MouseAction {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
@@ -35,4 +35,4 @@ function Control-Mouse {
     }
 }
 
-Export-ModuleMember -Function Control-Mouse
+Export-ModuleMember -Function Invoke-MouseAction

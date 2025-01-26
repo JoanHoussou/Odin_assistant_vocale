@@ -1,4 +1,4 @@
-function Manage-Windows {
+function Set-WindowState {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
@@ -25,7 +25,7 @@ function Manage-Windows {
     }
 }
 
-function Control-UI {
+function Invoke-UIAction {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
@@ -55,4 +55,4 @@ function Control-UI {
     }
 }
 
-Export-ModuleMember -Function Manage-Windows, Control-UI
+Export-ModuleMember -Function Set-WindowState, Invoke-UIAction

@@ -22,7 +22,7 @@ function Show-Notification {
     }
 }
 
-function Capture-Screenshot {
+function New-Screenshot {
     [CmdletBinding()]
     param(
         [string]$Path = "$env:USERPROFILE\Desktop\Screenshot_$(Get-Date -Format 'yyyyMMdd_HHmmss').png"
@@ -44,4 +44,4 @@ function Capture-Screenshot {
     }
 }
 
-Export-ModuleMember -Function Show-Notification, Capture-Screenshot
+Export-ModuleMember -Function Show-Notification, New-Screenshot
