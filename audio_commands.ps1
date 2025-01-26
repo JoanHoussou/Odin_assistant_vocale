@@ -4,6 +4,10 @@ Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Web
 Add-Type -AssemblyName PresentationFramework
 
+# Importer le module mes_actions
+$modulePath = Join-Path $PSScriptRoot "mes_commande_ext\mes_actions.ps1"
+. $modulePath
+
 # Constantes pour les touches de volume
 $VOLUME_MUTE = [char]173
 $VOLUME_DOWN = [char]174
@@ -192,6 +196,73 @@ function Capture-Screenshot {
     }
     catch {
         Write-Error "Erreur lors de la capture d'écran: $_"
+        return $false
+    }
+}
+
+function Control-Mouse {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateSet("Move", "Click", "DoubleClick")]
+        [string]$Action,
+        [int]$X,
+        [int]$Y,
+        [ValidateSet("Gauche", "Droit", "Milieu")]
+        [string]$Button = "Gauche"
+    )
+    
+    try {
+        switch ($Action) {
+            "Move" { 
+                if ($X -ge 0 -and $Y -ge 0) {
+                    Move-SourisVocale -X $X -Y $Y -MovementStyle "Smooth"
+                    return $true
+                }
+                return $false
+            }
+            "Click" { 
+                Invoke-ClicVocal -TypeClic $Button
+                return $true
+            }
+            "DoubleClick" {
+                Invoke-ClicVocal -TypeClic $Button -Double
+                return $true
+            }
+        }
+    }
+    catch {
+        Write-Error "Erreur lors du contrôle de la souris: $_"
+        return $false
+    }
+}
+
+function Control-UI {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$WindowTitle,
+        [Parameter(Mandatory=$true)]
+        [string]$ControlName,
+        [ValidateSet("Click", "Focus", "SetValue")]
+        [string]$Action = "Click",
+        [string]$Value = ""
+    )
+    
+    try {
+        switch ($Action) {
+            "Click" { 
+                return Invoke-ControlClick -WindowTitle $WindowTitle -ControlName $ControlName
+            }
+            "Focus" {
+                return Set-ControlFocus -WindowTitle $WindowTitle -ControlName $ControlName
+            }
+            "SetValue" {
+                return Set-ControlValue -WindowTitle $WindowTitle -ControlName $ControlName -Value $Value
+            }
+        }
+    } catch {
+        Write-Error "Erreur lors du contrôle de l'interface: $_"
         return $false
     }
 }

@@ -69,13 +69,67 @@ def execute_command(command):
                 say_text("Erreur lors de la capture d'écran")
             return
 
+        # Commandes de souris
+        mouse_move_match = re.search(r"(?:déplace|bouge|souris\s+déplacée?)(?:r)?\s+(?:la\s+)?(?:souris\s+)?(?:vers|à|en|aux?|coordinates?)?\s+(\d+)\s*[,\s]\s*(\d+)", command)
+        if mouse_move_match:
+            x, y = map(int, mouse_move_match.groups())
+            if execute_powershell_command(f"Control-Mouse -Action Move -X {x} -Y {y}"):
+                say_text(f"Souris déplacée vers {x}, {y}")
+            else:
+                say_text("Erreur lors du déplacement de la souris")
+            return
+
+        # Commandes de clic
+        click_match = re.search(r"(?:cliquer?|clics?|cliquez)\s+(?:avec\s+)?(?:le\s+)?(?:bouton\s+)?(gauche|droit|milieu)", command)
+        if click_match:
+            button = click_match.group(1).capitalize()
+            if "double" in command:
+                if execute_powershell_command(f"Control-Mouse -Action DoubleClick -Button {button}"):
+                    say_text(f"Double-clic {button.lower()} effectué")
+                else:
+                    say_text("Erreur lors du double-clic")
+            else:
+                if execute_powershell_command(f"Control-Mouse -Action Click -Button {button}"):
+                    say_text(f"Clic {button.lower()} effectué")
+                else:
+                    say_text("Erreur lors du clic")
+            return
+
+        # Commandes d'interface utilisateur
+        ui_click_match = re.search(r"(?:clique[rz]?|cliquez)\s+sur\s+[\"']?(.+?)[\"']?\s+(?:dans|de)\s+[\"']?(.+?)[\"']?", command)
+        if ui_click_match:
+            control, window = ui_click_match.groups()
+            if execute_powershell_command(f"Control-UI -Action Click -WindowTitle '{window}' -ControlName '{control}'"):
+                say_text(f"Clic effectué sur {control}")
+            else:
+                say_text("Erreur lors du clic sur l'élément")
+            return
+
+        ui_focus_match = re.search(r"(?:focus|sélectionne[rz]?)\s+[\"']?(.+?)[\"']?\s+(?:dans|de)\s+[\"']?(.+?)[\"']?", command)
+        if ui_focus_match:
+            control, window = ui_focus_match.groups()
+            if execute_powershell_command(f"Control-UI -Action Focus -WindowTitle '{window}' -ControlName '{control}'"):
+                say_text(f"Focus défini sur {control}")
+            else:
+                say_text("Erreur lors de la définition du focus")
+            return
+
+        ui_write_match = re.search(r"(?:écris|saisis?|entre[rz]?)\s+[\"']?(.+?)[\"']?\s+(?:dans|de)\s+[\"']?(.+?)[\"']?\s+(?:de|dans)\s+[\"']?(.+?)[\"']?", command)
+        if ui_write_match:
+            value, control, window = ui_write_match.groups()
+            if execute_powershell_command(f"Control-UI -Action SetValue -WindowTitle '{window}' -ControlName '{control}' -Value '{value}'"):
+                say_text(f"Texte saisi dans {control}")
+            else:
+                say_text("Erreur lors de la saisie du texte")
+            return
+
         # Commandes de gestion des fenêtres
-        if re.search(r"minimise|cache|réduis", command):
+        if re.search(r"minimise[rz]?|cache[rz]?|réduis", command):
             if execute_powershell_command("Manage-Windows -Action 'MinimizeAll'"):
                 say_text("Fenêtres minimisées")
             return
         
-        if re.search(r"restaure|affiche|montre", command):
+        if re.search(r"restaure[rz]?|affiche[rz]?|montre[rz]?", command):
             if execute_powershell_command("Manage-Windows -Action 'RestoreAll'"):
                 say_text("Fenêtres restaurées")
             return
@@ -86,7 +140,7 @@ def execute_command(command):
             execute_powershell_command("Lock-Session")
             return
 
-        # Vérifier d'abord si c'est une commande d'ouverture simple de YouTube
+        # Commande d'ouverture simple de YouTube
         if re.match(r'^(ouvrir?|lance[rz]?|démarre[rz]?)\s+youtube$', command):
             if execute_powershell_command("Start-Application -AppName 'youtube'"):
                 say_text("Ouverture de YouTube")
@@ -128,9 +182,10 @@ def execute_command(command):
                     say_text("Le volume doit être entre 0 et 100 pour cent")
             else:
                 say_text("Niveau de volume non spécifié")
+            return
 
         # Commandes d'applications
-        elif any(x in command for x in ["ouvrir", "ouvre", "lance", "démarre"]):
+        elif any(x in command.replace("-", "") for x in ["ouvrir", "ouvre", "lance", "démarre"]):
             for pattern in [r"ouvrir\s+(.+)", r"ouvre\s+(.+)", r"lance\s+(.+)", r"démarre\s+(.+)"]:
                 match = re.search(pattern, command)
                 if match:
@@ -165,18 +220,28 @@ if __name__ == "__main__":
     print("Commandes supportées :")
     print("- 'volume [0-100]' pour régler le volume")
     print("- 'ouvrir/ouvre/lance [application]' pour lancer une application")
-    print("  Applications : chrome, google, firefox, bloc-notes, calculatrice, explorateur")
+    print("  Applications : chrome, google, firefox, bloc-notes (ou bloc-note), calculatrice, explorateur")
     print("- YouTube :")
     print("  * 'ouvrir youtube' pour aller sur YouTube")
     print("  * 'chercher sur youtube [terme]' pour faire une recherche")
     print("  * 'youtube cherche [terme]' pour faire une recherche")
     print("- Système :")
     print("  * 'capture écran' pour faire une capture d'écran")
-    print("  * 'minimise/cache' pour réduire toutes les fenêtres")
-    print("  * 'restaure/affiche' pour restaurer les fenêtres")
+    print("  * 'minimise/minimisez/cache' pour réduire toutes les fenêtres")
+    print("  * 'restaure/restaurez/affiche' pour restaurer les fenêtres")
     print("  * 'verrouille/bloque' pour verrouiller la session")
     print("  * 'éteindre/arrêter' pour arrêter l'ordinateur")
     print("  * 'redémarrer' pour redémarrer l'ordinateur")
+    print("- Souris :")
+    print("  * 'déplacer souris vers X,Y' ou 'souris déplacée vers X,Y'")
+    print("  * 'cliquer/cliquez [bouton] gauche/droit/milieu'")
+    print("  * 'double-cliquer/double clic [bouton]'")
+    print("- Interface :")
+    print("  * 'cliquer/cliquez sur bouton dans fenêtre'")
+    print("  * 'focus sur champ dans fenêtre'")
+    print("  * 'écrire/saisir texte dans champ de fenêtre'")
+    print("Note : Les guillemets sont optionnels pour les noms de boutons,")
+    print("       champs et fenêtres dans les commandes d'interface")
     print("Appuyez sur Ctrl+C pour quitter")
     print("====================")
     
