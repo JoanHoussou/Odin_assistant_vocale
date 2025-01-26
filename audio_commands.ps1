@@ -1,4 +1,10 @@
-# Importer les modules
+# Importer les assemblies nécessaires
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+Add-Type -AssemblyName System.Web
+Add-Type -AssemblyName PresentationFramework
+
+# Importer tous les modules PowerShell
 $modulesPath = Join-Path $PSScriptRoot "modules"
 $moduleFiles = @(
     "VolumeManager.ps1",
@@ -9,6 +15,7 @@ $moduleFiles = @(
     "MouseManager.ps1"
 )
 
+# Charger chaque module
 foreach ($module in $moduleFiles) {
     $modulePath = Join-Path $modulesPath $module
     if (Test-Path $modulePath) {
@@ -25,16 +32,3 @@ if (Test-Path $mesActionsPath) {
 } else {
     Write-Error "Module mes_actions non trouvé: $mesActionsPath"
 }
-
-# Exporter toutes les fonctions pour qu'elles soient accessibles
-Export-ModuleMember -Function @(
-    'Set-SystemVolume',
-    'Start-Application',
-    'Restart-Shutdown',
-    'Lock-Session',
-    'Manage-Windows',
-    'Control-UI',
-    'Show-Notification',
-    'Capture-Screenshot',
-    'Control-Mouse'
-)
